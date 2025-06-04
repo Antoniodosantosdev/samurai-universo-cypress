@@ -1,4 +1,4 @@
-export const elements = {
+exports.elements = {
     name: 'input[placeholder^="Nome"]',
     email: 'input[placeholder$="email"]',
     password: 'input[placeholder*="senha"]',

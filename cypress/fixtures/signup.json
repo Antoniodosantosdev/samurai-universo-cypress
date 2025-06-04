@@ -1,0 +1,23 @@
+{
+  "success": {
+    "name": "Fernando Papito",
+    "email": "papito@samuraibs.com",
+    "password": "pwd123"
+  },
+  "email_dup": {
+    "name": "Antonio Carlos",
+    "email": "antonio@samuraibs.com",
+    "password": "pwd123",
+    "is_provider": true
+  },
+  "email_inv": {
+    "name": "Artur Enzo",
+    "email": "enzo.gmail.com",
+    "password": "pwd123"
+  },
+  "short_password": {
+    "name": "Jason Lima",
+    "email": "jason@gmail.com"
+    
+  }
+}

@@ -27,3 +27,13 @@
 Cypress.Commands.add("fillName", (name) => {
   cy.get('input[name="name"]', { log: false }).type(name, { log: false });
 }, { prevSubject: false, log: false });
+
+Cypress.Commands.add('postUser', (user) => {
+        cy.task("removeUser", user.email);
+
+      cy.request("POST", "http://localhost:3333/users", user).then(
+        (response) => {
+          expect(response.status).to.eq(200);
+        }
+      );
+});

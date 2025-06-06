@@ -1,29 +1,48 @@
-import fpPage from '../pages/forgotpass'
+import fpPage from "../pages/forgotpass";
+import rpPage from "../pages/resetpass";
 
-describe('resgate de senha', () => {
-    let data;
-    
+describe("resgate de senha", () => {
+  let data;
+
+  before(() => {
+    cy.fixture("recovery").then((recovery) => {
+      data = recovery;
+    });
+  });
+
+  context("quando o usuário esquece a senha", () => {
     before(() => {
-        cy.fixture('recovery').then((recovery) => {
-            data = recovery;
-        })
-    })
+      cy.postUser(data);
+    });
+    it("deve poder resgatar por email", () => {
+      fpPage.go();
+      fpPage.fillForm(data.email);
+      fpPage.submit();
 
-    context('quando o usuário esquece a senha', () => {
+      const message =
+        "Enviamos um e-mail para confirmar a recuperação de senha, cheque sua caixa de entrada.";
 
-        before(() => {
-            cy.postUser(data)
-        })
-        it('deve poder resgatar por email', () => {
-            fpPage.go()
-            fpPage.fillorm(data.email)
-            fpPage.submit()
+      fpPage.toast.ShouldHaveText(message);
 
-            const message = 'Enviamos um e-mail para confirmar a recuperação de senha, cheque sua caixa de entrada.'
+      cy.wait(7000);
+    });
+  });
 
-            fpPage.toast.ShouldHaveText(message)
+  context("quando o usuário solicita o resgate de senha", () => {
+    before(() => {
+      cy.postUser(data);
+      cy.recoveryPass(data.email);
+    });
+    it("deve pode cadastrar uma nova senha", () => {
+      const token = Cypress.env("recoveryToken");
 
-            cy.wait(7000)
-        })
-    })
-})
+      rpPage.go(token);
+      rpPage.fillForm("abc123", "abc123");
+      rpPage.submit();
+
+      const message = "Agora você já pode logar com a sua nova senha secreta.";
+
+      rpPage.toast.ShouldHaveText(message);
+    });
+  });
+});

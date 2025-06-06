@@ -10,7 +10,7 @@ class ForgotPassPage {
         cy.visit('/forgot-password');
     }
 
-    fillorm(email) {
+    fillForm(email) {
         cy.get(elements.email)
             .clear()
             .type(email);

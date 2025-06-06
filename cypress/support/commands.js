@@ -24,16 +24,32 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-Cypress.Commands.add("fillName", (name) => {
-  cy.get('input[name="name"]', { log: false }).type(name, { log: false });
-}, { prevSubject: false, log: false });
+Cypress.Commands.add(
+  "fillName",
+  (name) => {
+    cy.get('input[name="name"]', { log: false }).type(name, { log: false });
+  },
+  { prevSubject: false, log: false }
+);
 
-Cypress.Commands.add('postUser', (user) => {
-        cy.task("removeUser", user.email);
+Cypress.Commands.add("postUser", (user) => {
+  cy.task("removeUser", user.email);
 
-      cy.request("POST", "http://localhost:3333/users", user).then(
-        (response) => {
-          expect(response.status).to.eq(200);
-        }
-      );
+  cy.request("POST", "http://localhost:3333/users", user).then((response) => {
+    expect(response.status).to.eq(200);
+  });
+
+
+});
+
+Cypress.Commands.add('recoveryPass', (email) => {
+  cy.request("POST", "http://localhost:3333/password/forgot", { email: email }).then((response) => {
+    expect(response.status).to.eq(204);
+
+    cy.task('findToken', email)
+      .then((token) => {
+        // console.log(token)
+        Cypress.env('recoveryToken', token)
+      });
+  });
 });

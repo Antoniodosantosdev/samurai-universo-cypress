@@ -53,3 +53,5 @@ Cypress.Commands.add('recoveryPass', (email) => {
       });
   });
 });
+
+

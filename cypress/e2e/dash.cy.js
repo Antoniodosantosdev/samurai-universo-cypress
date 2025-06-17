@@ -1,3 +1,6 @@
+import loginPage from "../pages/login";
+import dashPage from "../pages/dash";
+
 describe("Dashboard", () => {
   context("quando o cliente faz um agendamento no app mobile", () => {
     const data = {
@@ -13,6 +16,7 @@ describe("Dashboard", () => {
         password: "pwd123",
         is_provider: true,
       },
+      appointmentHour: "14:00",
     };
     before(() => {
       cy.postUser(data.provider);
@@ -20,52 +24,23 @@ describe("Dashboard", () => {
 
       cy.apiLogin(data.customer).then(() => {
         const token = Cypress.env("apiToken");
-        cy.log(`Conseguimos pegar o token: ${token}`);
 
-        cy.setProviderId(data.provider.email).then(() => {
-
-        })
+        cy.setProviderId(data.provider.email).then(() => {});
+        cy.createAppointment(data.appointmentHour);
       });
     });
     it("o mesmo deve ser exibido no dashboard", () => {
-      cy.log('O Id do ramon é ' + Cypress.env('providerId'));
+      loginPage.go();
+      loginPage.fillForm(data.provider);
+      loginPage.submit();
+
+      dashPage.calendarShouldBeVisible();
+
+      const day = Cypress.env("appointmentDay");
+      dashPage.selectDay(day);
+
+      dashPage.appointmentShouldBe(data.customer, data.appointmentHour);
     });
   });
 });
 
-Cypress.Commands.add('setProviderId', (providerEmail) => {
-  cy.request({
-    method: 'GET',
-    url: 'http://localhost:3333/providers',
-    headers: {
-      Authorization: `Bearer ${Cypress.env('apiToken')}`
-    }
-
-  }).then((response) => {
-    expect(response.status).to.eq(200);
-    const providerList = response.body;
-    providerList.forEach((provider) => {
-      if (provider.email === providerEmail) {
-        Cypress.env('providerId', provider.id);
-        cy.log(`Provider ID set to: ${provider.id}`);
-      }
-    })
-  })
-})
-
-Cypress.Commands.add("apiLogin", (user) => {
-  const payload = {
-    email: user.email,
-    password: user.password,
-  };
-
-  return cy.request({
-    method: "POST",
-    url: "http://localhost:3333/sessions",
-    body: payload,
-  }).then((response) => {
-    expect(response.status).to.eq(200);
-
-    Cypress.env("apiToken", response.body.token);
-  });
-});

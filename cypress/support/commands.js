@@ -1,128 +1,105 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-
 import moment from "moment";
+import loginPage from "../pages/login";
+import dashPage from "../pages/dash";
 
-Cypress.Commands.add(
-  "fillName",
-  (name) => {
-    cy.get('input[name="name"]', { log: false }).type(name, { log: false });
-  },
-  { prevSubject: false, log: false }
-);
+const apiServer = "http://localhost:3333";
+
+Cypress.Commands.add("uiLogin", (user) => {
+  loginPage.go();
+  loginPage.fillForm(user);
+  loginPage.submit();
+  dashPage.header.userLoggedIn(user.name);
+});
 
 Cypress.Commands.add("postUser", (user) => {
   cy.task("removeUser", user.email);
-
-  cy.request("POST", "http://localhost:3333/users", user).then((response) => {
+  cy.request("POST", `${apiServer}/users`, user).then((response) => {
     expect(response.status).to.eq(200);
   });
-
-
 });
 
-Cypress.Commands.add('recoveryPass', (email) => {
-  cy.request("POST", "http://localhost:3333/password/forgot", { email: email }).then((response) => {
-    expect(response.status).to.eq(204);
+Cypress.Commands.add("recoveryPass", (email) => {
+  cy.request("POST", `${apiServer}/password/forgot`, { email }).then(
+    (response) => {
+      expect(response.status).to.eq(204);
 
-    cy.task('findToken', email)
-      .then((token) => {
-        // console.log(token)
-        Cypress.env('recoveryToken', token)
+      cy.task("findToken", email).then((token) => {
+        Cypress.env("recoveryToken", token);
       });
-  });
+    }
+  );
 });
-
-
 
 Cypress.Commands.add("createAppointment", (hour) => {
   let now = new Date();
-  now.setDate(now.getDate() + 1); // Agendamento para o dia seguinte
+  now.setDate(now.getDate() + 1);
 
-  const day = now.getDate();
-  Cypress.env("appointmentDay", day); // <- Corrigido aqui
+  Cypress.env('appointmentDate', now);
 
-  const date = moment(now).format("YYYY-MM-DD " + hour + ":00");
+  const date = moment(now).format(`YYYY-MM-DD ${hour}:00`);
 
   const payload = {
     provider_id: Cypress.env("providerId"),
-    date: date,
+    date: date
   };
+  
+  cy.log(payload);
 
-  return cy
-    .request({
-      method: "POST",
-      url: "http://localhost:3333/appointments",
-      body: payload,
-      headers: {
-        Authorization: `Bearer ${Cypress.env("apiToken")}`,
-      },
-    })
-    .then((response) => {
-      expect(response.status).to.eq(200);
-      cy.log(`Agendamento criado para o dia ${day} às 14:00`);
-    });
-});
-
-Cypress.Commands.add("setProviderId", (providerEmail) => {
   cy.request({
-    method: "GET",
-    url: "http://localhost:3333/providers",
+    method: "POST",
+    url: `${apiServer}/appointments`,
+    body: payload,
     headers: {
       Authorization: `Bearer ${Cypress.env("apiToken")}`,
     },
   }).then((response) => {
     expect(response.status).to.eq(200);
-    const providerList = response.body;
-    providerList.forEach((provider) => {
-      if (provider.email === providerEmail) {
-        Cypress.env("providerId", provider.id);
-        cy.log(`Provider ID set to: ${provider.id}`);
-      }
-    });
   });
 });
 
-Cypress.Commands.add("apiLogin", (user) => {
+Cypress.Commands.add("setProviderId", (providerEmail) => {
+  cy.request({
+    method: "GET",
+    url: `${apiServer}/providers`,
+    headers: {
+      Authorization: `Bearer ${Cypress.env("apiToken")}`,
+    },
+  }).then((response) => {
+    expect(response.status).to.eq(200);
+
+    const provider = response.body.find((p) => p.email === providerEmail);
+    if (provider) {
+      Cypress.env("providerId", provider.id);
+      cy.log(`Provider ID set to: ${provider.id}`);
+    } else {
+      throw new Error(`Provider with email ${providerEmail} not found`);
+    }
+  });
+});
+
+Cypress.Commands.add("apiLogin", (user, setLocalStorage = false) => {
   const payload = {
     email: user.email,
     password: user.password,
   };
 
-  return cy
-    .request({
-      method: "POST",
-      url: "http://localhost:3333/sessions",
-      body: payload,
-    })
-    .then((response) => {
-      expect(response.status).to.eq(200);
+  cy.request("POST", `${apiServer}/sessions`, payload).then((response) => {
+    expect(response.status).to.eq(200);
+    Cypress.env("apiToken", response.body.token);
 
-      Cypress.env("apiToken", response.body.token);
-    });
+    if (setLocalStorage) {
+      const { token, user } = response.body;
+
+      cy.visit("/dashboard", {
+        onBeforeLoad(win) {
+          win.localStorage.setItem("@Samurai:token", token);
+          win.localStorage.setItem("@Samurai:user", JSON.stringify(user));
+        },
+      });
+    }
+  });
+
+  if (!setLocalStorage) {
+    cy.log("API login sem LocalStorage");
+  }
 });
-
-

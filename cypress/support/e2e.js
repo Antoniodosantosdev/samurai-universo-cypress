@@ -15,3 +15,9 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+
+
+afterEach(() => {
+    cy.wait(2000)
+    cy.screenshot()
+})

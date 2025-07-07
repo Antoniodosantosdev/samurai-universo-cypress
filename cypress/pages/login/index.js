@@ -10,6 +10,8 @@ class LoginPage {
 
   go() {
     cy.visit("/");
+
+    
   }
 
   fillForm(user) {

@@ -43,6 +43,8 @@ describe("resgate de senha", () => {
       const message = "Agora você já pode logar com a sua nova senha secreta.";
 
       rpPage.toast.ShouldHaveText(message);
+
+      
     });
   });
 });

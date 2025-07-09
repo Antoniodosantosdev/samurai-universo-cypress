@@ -11,6 +11,8 @@ class LoginPage {
   go() {
     cy.visit("/");
 
+    cy.contains(elements.title)
+      .should('be.visible')
     
   }
 

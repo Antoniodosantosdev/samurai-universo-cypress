@@ -8,6 +8,9 @@ class ForgotPassPage {
         
     go() {
         cy.visit('/forgot-password');
+
+        cy.contains(elements.title)
+            .should('be.visible');
     }
 
     fillForm(email) {

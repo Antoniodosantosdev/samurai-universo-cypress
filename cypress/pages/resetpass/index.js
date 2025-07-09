@@ -9,6 +9,13 @@ class ResetPassPage {
   }
   go(token) {
     cy.visit(`/reset-password?token=${token}`);
+
+    
+
+    cy.contains(elements.title)
+      .should('be.visible');  
+
+    cy.wait(4000)
   }
 
   fillForm(newPass, confirmPass) {

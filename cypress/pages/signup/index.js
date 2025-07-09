@@ -10,6 +10,9 @@ class signupPage {
 
   go() {
     cy.visit("/signup");
+
+    cy.contains(elements.title)
+      .should('be.visible');
   }
 
   fillForm(user) {

@@ -1,0 +1,16 @@
+# .github/workflows/run-manualmente.yml
+name: Chrome UI Tests
+
+on:
+  workflow_dispatch: # Permite execução manual
+
+jobs:
+  chrome-ui-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: List files project
+        run: ls -l

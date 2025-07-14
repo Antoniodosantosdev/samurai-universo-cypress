@@ -2,6 +2,7 @@
 import { defineConfig } from "cypress";
 import { Pool } from "pg";
 
+// (Opcional: considere usar dotenv para proteger credenciais em produção)
 const pool = new Pool({
   host: "aws-0-sa-east-1.pooler.supabase.com",
   user: "postgres.xazzvflfwnknhriwixry",
@@ -43,8 +44,9 @@ async function findToken(email) {
 }
 
 export default defineConfig({
+  projectId: "c8md7t", // Cypress Cloud project ID
   video: true,
-  
+
   e2e: {
     baseUrl: "http://localhost:3000",
     viewportWidth: 1440,

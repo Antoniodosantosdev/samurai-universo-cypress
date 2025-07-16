@@ -44,7 +44,7 @@ async function findToken(email) {
 }
 
 export default defineConfig({
-  projectId: "c8md7t", // Cypress Cloud project ID
+  projectId: "j54iof", // Cypress Cloud project ID
   video: true,
 
   e2e: {

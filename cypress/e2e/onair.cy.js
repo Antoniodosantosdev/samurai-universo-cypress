@@ -1,7 +1,7 @@
 describe('Teste de Login', () => {
   beforeEach(() => {
     // uma simples marcação
-    cy.visit('/login');
+    cy.visit('/');
   });
     it('Webapp deve estar online', function(){
         cy.title()

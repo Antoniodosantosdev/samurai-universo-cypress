@@ -6,7 +6,8 @@ on:
 jobs:
   chrome-ui-tests:
     runs-on: ubuntu-latest
-    container: cypress/browsers:node22.14.0-chrome100-ff98
+    container: cypress/browsers:node18.12.0-chrome107-ff107  # CORRIGIDO
+
     strategy:
       fail-fast: false
       matrix:
@@ -28,11 +29,7 @@ jobs:
           wait-on: 'https://samuraibs-web.onrender.com'
           wait-on-timeout: 120
           browser: chrome
-          spec: cypress/e2e/**/*.cy.js  # ajuste conforme o nome dos seus arquivos
-          # record: true
-          # parallel: true
-          # group: 'UI - Chrome'
+          spec: cypress/e2e/**/*.cy.js  # ajuste se usar .spec.js
         env:
           TZ: America/Sao_Paulo
-          # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -2,7 +2,7 @@ import moment from "moment";
 import loginPage from "../pages/login";
 import dashPage from "../pages/dash";
 
-const apiServer = "http://localhost:3333";
+const apiServer = "https://samuraibs-api.onrender.com/";
 
 Cypress.Commands.add("uiLogin", (user) => {
   loginPage.go();

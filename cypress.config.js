@@ -48,7 +48,8 @@ export default defineConfig({
   video: true,
 
   e2e: {
-    baseUrl: "http://localhost:3000",
+    baseUrl: "https://samuraibs-web.onrender.com",
+    
     viewportWidth: 1440,
     viewportHeight: 900,
 

@@ -28,10 +28,12 @@ jobs:
           wait-on: 'https://samuraibs-web.onrender.com'
           wait-on-timeout: 120
           browser: chrome
-          spec: cypress/e2e/**/*.cy.js  # ajuste conforme o nome dos seus arquivos
+          spec: cypress/e2e/**/*.cy.js
           record: true
           parallel: true
           group: 'UI - Chrome'
+          config-file: cypress.config.js  # <--- adicionado aqui
+
         env:
           TZ: America/Sao_Paulo
           # CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
